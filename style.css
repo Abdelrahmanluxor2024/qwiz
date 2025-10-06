@@ -20,6 +20,7 @@ body {
     min-height: 100vh;
     margin: 0;
     transition: background-color 0.3s;
+    background-image: url(Image_fx.jpg);
 }
 
 .container {
@@ -242,4 +243,39 @@ html[dir="ltr"] #feedback-container {
 /* أدوات مساعدة */
 .hidden {
     display: none;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-image: url("background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: "Cairo", sans-serif;
+  color: #fff;
+}
+
+/* المحتوى */
+.content {
+  padding: 50px;
+  text-align: center;
+}
+
+/* الفوتر الثابت */
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 12px 0;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+}
+
+footer span {
+  color: #ffd54f;
+  font-weight: 600;
 }
