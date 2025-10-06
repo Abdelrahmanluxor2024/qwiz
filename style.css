@@ -1,0 +1,245 @@
+:root {
+    --primary-bg: #f0f4f8;
+    --secondary-bg: #ffffff;
+    --accent-color: #ffc107;
+    --text-color: #333;
+    --gray-light: #dcdcdc;
+    --correct-color: #28a745;
+    --wrong-color: #dc3545;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+}
+
+body {
+    font-family: 'Cairo', 'Poppins', sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    transition: background-color 0.3s;
+}
+
+.container {
+    background-color: var(--secondary-bg);
+    padding: 30px 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    position: relative;
+}
+
+/* زر تبديل اللغة */
+.lang-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: 1px solid var(--gray-light);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.lang-btn:hover {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+
+/* الواجهة الرئيسية */
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.btn {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.5);
+}
+
+
+/* واجهة الاختبار */
+.timer-container {
+    margin-bottom: 20px;
+}
+
+.timer {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+}
+
+.timer-svg {
+    transform: rotate(-90deg);
+}
+
+.timer-bg {
+    fill: none;
+    stroke: var(--gray-light);
+    stroke-width: 10;
+}
+
+.timer-progress {
+    fill: none;
+    stroke: var(--accent-color);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    transition: stroke-dashoffset 1s linear;
+}
+
+#timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+#question {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.answer-btn {
+    display: block;
+    width: 100%;
+    background-color: #f9f9f9;
+    border: 2px solid var(--gray-light);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: right;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+html[dir="ltr"] .answer-btn {
+    text-align: left;
+}
+
+.answer-btn:hover:not(:disabled) {
+    border-color: var(--accent-color);
+}
+
+/* تم التعديل: فئة جديدة للإجابة المختارة فقط */
+.answer-btn.selected {
+    background-color: #fff3cd;
+    border-color: var(--accent-color);
+}
+
+/* النتيجة */
+#result-message {
+    font-size: 1.5rem;
+    margin: 20px 0;
+}
+
+/* تنسيقات جديدة لملخص الإجابات */
+#feedback-container {
+    margin-top: 30px;
+    text-align: right;
+}
+
+html[dir="ltr"] #feedback-container {
+    text-align: left;
+}
+
+.feedback-item {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.feedback-item h4 {
+    margin-bottom: 8px;
+}
+
+.feedback-item p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+}
+
+.correct-feedback {
+    color: var(--correct-color);
+    font-weight: bold;
+}
+
+.wrong-feedback {
+    color: var(--wrong-color);
+    font-weight: bold;
+}
+
+
+/* تنسيقات النافذة المنبثقة (جديد) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content p {
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+/* أدوات مساعدة */
+.hidden {
+    display: none;
+}
