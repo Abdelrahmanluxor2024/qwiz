@@ -260,3 +260,11 @@ footer span {
   color: #ffd54f;
   font-weight: 600;
 }
+/* --- أضف هذا الكود في نهاية ملف style.css --- */
+
+/* تنسيق أيقونة الرأس الجديدة */
+.header-icon {
+    width: 80px; /* يمكنك التحكم في الحجم */
+    height: auto;
+    margin-bottom: 20px; /* لإعطاء مسافة بينها وبين النص الذي يليها */
+}
