@@ -25,9 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
     let timeLeft;
     let questions = [];
-    let userAnswers = []; // جديد: لتخزين إجابات المستخدم
+    let userAnswers = []; // لتخزين إجابات المستخدم ومقارنتها
 
-    // قاموس الترجمة (مع إضافة نصوص الملاحظات)
+    // قاموس الترجمة مع هيكل الأسئلة الجديد
+    // تم تغيير 'correct' إلى 'value' لإعطاء نقاط لكل إجابة
+    // الأسئلة المعرفية: الإجابة الصحيحة تأخذ 1، والبقية 0
+    // الأسئلة التقييمية: الإجابات التي تدل على تركيز عالٍ تأخذ نقاطاً أعلى
     const translations = {
         ar: {
             title: "اختبار التركيز",
@@ -46,11 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
             correct_answer: "الإجابة الصحيحة",
             not_answered: "لم تتم الإجابة",
             questions: [
-                { question: "كم عدد ساعات النوم التي حصلت عليها الليلة الماضية؟", answers: [ { text: "أكثر من 8 ساعات", correct: true }, { text: "6-8 ساعات", correct: true }, { text: "4-6 ساعات", correct: false }, { text: "أقل من 4 ساعات", correct: false } ] },
-                { question: "ما هو لون زر 'ابدأ الاختبار'؟", answers: [ { text: "أزرق", correct: false }, { text: "أخضر", correct: false }, { text: "أصفر", correct: true }, { text: "أحمر", correct: false } ] },
-                { question: "في أي وقت من اليوم تشعر بأكبر قدر من النشاط؟", answers: [ { text: "الصباح الباكر", correct: true }, { text: "فترة الظهيرة", correct: false }, { text: "بعد الظهر", correct: false }, { text: "في المساء", correct: true } ] },
-                { question: "هل تشعر بالنعاس أثناء قراءة هذا السؤال؟", answers: [ { text: "إطلاقاً", correct: true }, { text: "قليلاً", correct: false }, { text: "نعم، جداً", correct: false }, { text: "كنت نائماً واستيقظت للتو", correct: false } ] },
-                { question: "ما هو ناتج 5 * 3 - 2؟", answers: [ { text: "10", correct: false }, { text: "13", correct: true }, { text: "25", correct: false }, { text: "5", correct: false } ] }
+                { type: 'assessment', question: "كم عدد ساعات النوم التي حصلت عليها الليلة الماضية؟", answers: [ { text: "أكثر من 8 ساعات", value: 1 }, { text: "6-8 ساعات", value: 1 }, { text: "4-6 ساعات", value: 0 }, { text: "أقل من 4 ساعات", value: 0 } ] },
+                { type: 'knowledge', question: "ما هو لون زر 'ابدأ الاختبار'؟", answers: [ { text: "أزرق", value: 0 }, { text: "أخضر", value: 0 }, { text: "أصفر", value: 1 }, { text: "أحمر", value: 0 } ] },
+                { type: 'assessment', question: "في أي وقت من اليوم تشعر بأكبر قدر من النشاط؟", answers: [ { text: "الصباح الباكر", value: 1 }, { text: "فترة الظهيرة", value: 0 }, { text: "بعد الظهر", value: 0 }, { text: "في المساء", value: 1 } ] },
+                { type: 'assessment', question: "هل تشعر بالنعاس أثناء قراءة هذا السؤال؟", answers: [ { text: "إطلاقاً", value: 1 }, { text: "قليلاً", value: 0 }, { text: "نعم، جداً", value: 0 }, { text: "كنت نائماً واستيقظت للتو", value: 0 } ] },
+                { type: 'knowledge', question: "ما هو ناتج 5 * 3 - 2؟", answers: [ { text: "10", value: 0 }, { text: "13", value: 1 }, { text: "25", value: 0 }, { text: "5", value: 0 } ] }
             ]
         },
         en: {
@@ -70,11 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
             correct_answer: "Correct Answer",
             not_answered: "Not Answered",
             questions: [
-                { question: "How many hours of sleep did you get last night?", answers: [ { text: "More than 8 hours", correct: true }, { text: "6-8 hours", correct: true }, { text: "4-6 hours", correct: false }, { text: "Less than 4 hours", correct: false } ] },
-                { question: "What is the color of the 'Start Test' button?", answers: [ { text: "Blue", correct: false }, { text: "Green", correct: false }, { text: "Yellow", correct: true }, { text: "Red", correct: false } ] },
-                { question: "At what time of day do you feel most energetic?", answers: [ { text: "Early Morning", correct: true }, { text: "Midday", correct: false }, { text: "Afternoon", correct: false }, { text: "Evening", correct: true } ] },
-                { question: "Do you feel sleepy while reading this question?", answers: [ { text: "Not at all", correct: true }, { text: "A little", correct: false }, { text: "Yes, very", correct: false }, { text: "I was sleeping and just woke up", correct: false } ] },
-                { question: "What is the result of 5 * 3 - 2?", answers: [ { text: "10", correct: false }, { text: "13", correct: true }, { text: "25", correct: false }, { text: "5", correct: false } ] }
+                { type: 'assessment', question: "How many hours of sleep did you get last night?", answers: [ { text: "More than 8 hours", value: 1 }, { text: "6-8 hours", value: 1 }, { text: "4-6 hours", value: 0 }, { text: "Less than 4 hours", value: 0 } ] },
+                { type: 'knowledge', question: "What is the color of the 'Start Test' button?", answers: [ { text: "Blue", value: 0 }, { text: "Green", value: 0 }, { text: "Yellow", value: 1 }, { text: "Red", value: 0 } ] },
+                { type: 'assessment', question: "At what time of day do you feel most energetic?", answers: [ { text: "Early Morning", value: 1 }, { text: "Midday", value: 0 }, { text: "Afternoon", value: 0 }, { text: "Evening", value: 1 } ] },
+                { type: 'assessment', question: "Do you feel sleepy while reading this question?", answers: [ { text: "Not at all", value: 1 }, { text: "A little", value: 0 }, { text: "Yes, very", value: 0 }, { text: "I was sleeping and just woke up", value: 0 } ] },
+                { type: 'knowledge', question: "What is the result of 5 * 3 - 2?", answers: [ { text: "10", value: 0 }, { text: "13", value: 1 }, { text: "25", value: 0 }, { text: "5", value: 0 } ] }
             ]
         }
     };
@@ -118,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         quizSection.classList.remove('hidden');
         currentQuestionIndex = 0;
         score = 0;
-        userAnswers = []; // إعادة تعيين سجل الإجابات
+        userAnswers = [];
         setNextQuestion();
     }
 
@@ -135,12 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function startTimer() {
         timeLeft = TIME_LIMIT;
         timerText.textContent = timeLeft;
-        setCircleDasharray(timeLeft);
+        setCircleDasharray();
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             timeLeft--;
             timerText.textContent = timeLeft;
-            setCircleDasharray(timeLeft);
+            setCircleDasharray();
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 selectAnswer(null); // الوقت انتهى
@@ -148,10 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
     
-    function setCircleDasharray(time) {
-        const timeFraction = time / TIME_LIMIT;
-        const rawTimeFraction = timeFraction - (1 / TIME_LIMIT) * (1 - timeFraction);
-        const dashoffset = rawTimeFraction * FULL_DASH_ARRAY;
+    function setCircleDasharray() {
+        const timeFraction = timeLeft / TIME_LIMIT;
+        // صيغة محسنة قليلاً للحركة عند البداية
+        const dashoffset = (1 - timeFraction) * FULL_DASH_ARRAY;
         timerProgress.style.strokeDashoffset = dashoffset;
     }
 
@@ -161,9 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const button = document.createElement('button');
             button.innerText = answer.text;
             button.classList.add('answer-btn');
-            if (answer.correct) {
-                button.dataset.correct = true;
-            }
+            // تخزين القيمة (النقاط) في الزر مباشرة
+            button.dataset.value = answer.value;
             button.addEventListener('click', () => selectAnswer(button));
             answersContainer.appendChild(button);
         });
@@ -173,37 +175,51 @@ document.addEventListener('DOMContentLoaded', () => {
         while (answersContainer.firstChild) {
             answersContainer.removeChild(answersContainer.firstChild);
         }
-        timerProgress.style.transition = 'none';
-        timerProgress.style.strokeDashoffset = FULL_DASH_ARRAY;
-        setTimeout(() => { timerProgress.style.transition = 'stroke-dashoffset 1s linear'; }, 20);
+        // إعادة تعيين حركة المؤقت بشكل صحيح
+        timerProgress.style.transition = 'none'; // إزالة الانتقال مؤقتًا
+        timerProgress.style.strokeDashoffset = 0; // إعادة التعيين الكامل
+        // إعادة إجبار المتصفح على تطبيق التغيير قبل إعادة الانتقال
+        void timerProgress.offsetWidth; 
+        timerProgress.style.transition = 'stroke-dashoffset 1s linear';
     }
 
     function selectAnswer(selectedButton) {
         clearInterval(timerInterval);
-        const correct = selectedButton ? selectedButton.dataset.correct === 'true' : false;
-        if (correct) {
+
+        const currentQuestion = questions[currentQuestionIndex];
+        const selectedValue = selectedButton ? parseInt(selectedButton.dataset.value) : 0;
+        
+        // زيادة النقاط بناءً على قيمة الإجابة
+        if (selectedValue > 0) {
             score++;
         }
-        // تخزين إجابة المستخدم
+
+        // البحث عن الإجابة الصحيحة للأسئلة المعرفية فقط
+        const correctAnswerObj = currentQuestion.type === 'knowledge' ? currentQuestion.answers.find(a => a.value === 1) : null;
+
         userAnswers.push({
-            question: questions[currentQuestionIndex].question,
+            question: currentQuestion.question,
+            type: currentQuestion.type,
             selected: selectedButton ? selectedButton.innerText : null,
-            correctAnswer: questions[currentQuestionIndex].answers.find(a => a.correct).text,
-            isCorrect: correct
+            correctAnswer: correctAnswerObj ? correctAnswerObj.text : null,
+            isCorrect: selectedValue > 0
         });
 
-        // تعطيل جميع الأزرار وتحديد الإجابة المختارة
         Array.from(answersContainer.children).forEach(button => {
             button.disabled = true;
             if (button === selectedButton) {
-                button.classList.add('selected'); // فقط فئة للإشارة للاختيار
+                button.classList.add(selectedValue > 0 ? 'correct' : 'wrong');
+            }
+            // إظهار الإجابة الصحيحة إذا كانت موجودة ولم يتم اختيارها
+            if (correctAnswerObj && button.dataset.value === '1' && button !== selectedButton) {
+                 button.classList.add('correct');
             }
         });
-        // الانتقال للسؤال التالي بعد فترة قصيرة
+
         setTimeout(() => {
             currentQuestionIndex++;
             setNextQuestion();
-        }, 1000); 
+        }, 1200); // زيادة المدة قليلاً لرؤية الإجابة
     }
 
     function showResult() {
@@ -211,14 +227,14 @@ document.addEventListener('DOMContentLoaded', () => {
         resultSection.classList.remove('hidden');
         const langData = translations[currentLang];
 
-        if (score >= questions.length / 2) {
+        // النتيجة بناءً على عدد النقاط (3 أو أكثر يعتبر جيداً)
+        if (score >= 3) {
             resultMessageEl.textContent = langData.positive_result;
         } else {
             resultMessageEl.textContent = langData.negative_result;
         }
 
-        // عرض تفاصيل الإجابات
-        feedbackContainer.innerHTML = ''; // مسح النتائج السابقة
+        feedbackContainer.innerHTML = '';
         userAnswers.forEach((answer, index) => {
             const feedbackItem = document.createElement('div');
             feedbackItem.classList.add('feedback-item');
@@ -229,7 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let html = `<h4>${index + 1}. ${answer.question}</h4>`;
             html += `<p class="${feedbackClass}">${langData.your_answer}: ${answerText}</p>`;
             
-            if (!answer.isCorrect) {
+            // عرض الإجابة الصحيحة فقط للأسئلة المعرفية وإذا كانت الإجابة خاطئة
+            if (answer.type === 'knowledge' && !answer.isCorrect) {
                 html += `<p>${langData.correct_answer}: "${answer.correctAnswer}"</p>`;
             }
 
